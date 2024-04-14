@@ -1,31 +1,39 @@
-#include <Wire.h>
-#include <LiquidCrystal_I2C.h>
+#include <Arduino.h>
 
-char array1[] = "     RASPBERRY     ";
-char array2[] = "      PI PICO      ";
-char array3[] = "      TESTING      ";
-char array4[] = "        :-)        ";    
+#include <display.h>
+#include <sensor.h>
 
-LiquidCrystal_I2C lcd(0x27, 20, 4);
+int moisture;
+bool turnedOn = true;
+
+void turnDevicesOff() {
+  Display::displayOff();
+  Sensor::sensorOff();
+  turnedOn = false;
+}
+
+void turnDevicesOn() {
+  Display::displayOn();
+  Sensor::sensorOn();
+  turnedOn = true;
+}
 
 void setup()
 {
   Serial.begin(9600);
-  lcd.init();
-  lcd.backlight();
-  
-  lcd.print(array1);                // BY DEFAULT CURSOR IS SET AT 0,0, i.e. 0th ROW AND 0th COLUMN
-  
-  lcd.setCursor(0,1);
-  lcd.print(array2);
-  
-  lcd.setCursor(0,2);
-  lcd.print(array3);
-  
-  lcd.setCursor(0,3);
-  lcd.print(array4);
+  Display::setup();
+  Sensor::setup();
 }
 
-void loop(){
-  
+void loop() {
+  if (turnedOn) {
+    moisture = Sensor::readSensor();
+
+    Serial.print("Current soil moisture level: ");
+    Serial.println(moisture);
+
+    delay(5000);
+  } else {
+    Serial.println("Devices are turned off");
+  }
 }
