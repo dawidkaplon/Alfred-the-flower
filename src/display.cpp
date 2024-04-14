@@ -2,30 +2,49 @@
 #include <LiquidCrystal_I2C.h>
 #include <Wire.h>
 
+#include <characters.h>
+
 namespace Display {
 LiquidCrystal_I2C lcd(0x27, 20, 4);
 
-void printText(const char *line0, const char *line1, const char *line2,
-               const char *line3) {
-  lcd.print(line0); // Cursor is set at (0,0) i.e. row0 col0 at the beginning
+const char *padText(const char *text) {
+  String result = text;
+  int textLen = strlen(text);
+  int paddingLen = (20 - textLen) / 2;
 
-  lcd.setCursor(0, 1);
-  lcd.print(line1);
+  for (int i = 0; i < paddingLen; i++) {
+    result = " " + result; // Add leading spaces for padding
+  }
 
-  lcd.setCursor(0, 2);
-  lcd.print(line2);
-
-  lcd.setCursor(0, 3);
-  lcd.print(line3);
+  return result.c_str();
 }
 
-void displayOn() { lcd.noDisplay(); }
+void printText(const char *line0, const char *line1, const char *line2,
+               const char *line3) {
+  lcd.setCursor(0, 0);
+  lcd.print(padText(line0));
 
-void displayOff() { lcd.display(); }
+  lcd.setCursor(0, 1);
+  lcd.print(padText(line1));
+
+  lcd.setCursor(0, 2);
+  lcd.print(padText(line2));
+
+  lcd.setCursor(0, 3);
+  lcd.print(padText(line3));
+}
+
+void displayOn() { lcd.backlight(); }
+
+void displayOff() { lcd.noBacklight(); }
 
 void setup() {
   lcd.init();
   lcd.backlight();
-  printText("Alfred", "", "", "");
+  lcd.clear();
+
+  lcd.createChar(0, sadFace);
+  lcd.createChar(1, happyFace);
+  lcd.createChar(2, heart);
 }
 } // namespace Display
