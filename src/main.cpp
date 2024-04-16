@@ -1,6 +1,7 @@
 #include <Arduino.h>
 
 #include <display.h>
+#include <motionDetector.h>
 #include <sensor.h>
 
 #define greenLed 15
@@ -14,8 +15,8 @@ const char *soilCondition; // e.g. dry enough/too wet
 void turnDevicesOff() {
   Display::displayOff();
   Sensor::sensorOff();
-  digitalWrite(greenLed, LOW);
-  digitalWrite(redLed, LOW);
+  analogWrite(greenLed, 0);
+  analogWrite(redLed, 0);
   turnedOn = false;
 }
 
@@ -36,6 +37,7 @@ void setup()
 }
 
 void loop() {
+
   if (turnedOn) {
     moisture = float(Sensor::readSensor()) / 10;
     // Approximate moisture level ranges:
@@ -65,25 +67,28 @@ void loop() {
     switch (alfredFeelings) {
     case 0: // Sad Alfred
       Display::lcd.write(byte(0));
-      Display::lcd.print("  ");
+      Display::lcd.write(byte(0));
       Display::lcd.write(byte(0));
 
-      digitalWrite(greenLed, LOW);
-      digitalWrite(redLed, HIGH);
+      analogWrite(greenLed, 0);
+      analogWrite(redLed, 4);
       break;
 
     case 1: // Happy Alfred
       Display::lcd.write(byte(2));
-      Display::lcd.print("  ");
+      Display::lcd.write(byte(2));
       Display::lcd.write(byte(2));
 
-      digitalWrite(redLed, LOW);
-      digitalWrite(greenLed, HIGH);
+      analogWrite(redLed, 0);
+      digitalWrite(greenLed, 4);
       break;
     }
 
-    delay(20000);
+    // Display::printText("", ("Current: " +
+    // Detector::isMotionDetected()).c_str(), "", "");
+    delay(1000);
+
   } else {
-    Serial.println("Devices are turned off");
+    delay(1000);
   }
 }

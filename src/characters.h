@@ -1,5 +1,5 @@
-#ifndef CHARACTERS
-#define CHARACTERS
+#ifndef CHARACTERS_H
+#define CHARACTERS_H
 
 // Custom characters
 
@@ -14,7 +14,6 @@ unsigned char sadFace[8] = {
     0b10001,
     0b00000
 };
-
 
 // id=1
 unsigned char happyFace[8] = {

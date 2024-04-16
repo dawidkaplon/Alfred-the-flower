@@ -14,6 +14,7 @@ int readSensor() {
   delay(10);
   int val = analogRead(sensorPin);
   sensorOff();
+  Serial.println("Sensor value: " + String(val));
   return val;
 }
 
