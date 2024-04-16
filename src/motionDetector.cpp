@@ -1,4 +1,3 @@
-
 #include <Arduino.h>
 
 #define detectorPin 17
@@ -9,7 +8,7 @@ int pinStatePrevious = LOW;
 namespace Detector {
 void setup() {
   Serial.begin(9600);
-  pinMode(detectorPin, INPUT);
+  pinMode(detectorPin, INPUT_PULLDOWN);
 }
 
 bool isMotionDetected() {

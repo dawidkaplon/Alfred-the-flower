@@ -13,7 +13,7 @@ const char *padText(const char *text) {
   int paddingLen = (20 - textLen) / 2;
 
   for (int i = 0; i < paddingLen; i++) {
-    result = " " + result; // Add leading spaces for padding
+    result = " " + result;
   }
 
   return result.c_str();
