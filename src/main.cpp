@@ -8,9 +8,10 @@
 #define redLed 14
 
 int moisture;
+int previousMoisture;
 int timeDisplayWasTurnedOn = 0;
-bool turnedOn = true;
 int alfredFeelings;
+bool turnedOn = true;
 const char *soilCondition; // E.g. dry enough/too wet
 
 void lightLed() {
@@ -53,11 +54,12 @@ void setup()
 void loop() {
 
   if (turnedOn) {
+    previousMoisture = moisture;
     moisture = float(Sensor::readSensor()) / 10;
     // Approximate moisture level ranges:
-    // < 35 = too wet
+    // < 35  = too wet
     // 35-60 = fine
-    // > 60 = dry enough to be watered
+    // > 60  = dry enough to be watered
     if (moisture < 35) {
       alfredFeelings = 0;
       soilCondition = "Jest zbyt mokro!";
@@ -72,32 +74,12 @@ void loop() {
     }
 
     lightLed();
-    Display::printText("***** ALFRED *****", "", soilCondition,
-                       ("Poziom suchosci: " + String(moisture) + "%").c_str());
+    if (moisture !=
+        previousMoisture) { // Reload LCD text only when the moisture changes
+      Display::printText(alfredFeelings, moisture, soilCondition);
+    }
 
-    // switch (alfredFeelings) {
-    // // In addition to basic text, display appropriate custom characters.
-    // // Depending on moisture level
-    // case 0: // Sad Alfred
-    //   Display::lcd.setCursor(0, 1);
-    //   Display::lcd.write(byte(0));
-    //   Display::lcd.write(byte(0));
-    //   Display::lcd.setCursor(18, 1);
-    //   Display::lcd.write(byte(0));
-    //   Display::lcd.write(byte(0));
-    //   break;
-
-    // case 1: // Happy Alfred
-    //   Display::lcd.setCursor(0, 1);
-    //   Display::lcd.write(byte(2));
-    //   Display::lcd.write(byte(2));
-    //   Display::lcd.setCursor(18, 1);
-    //   Display::lcd.write(byte(2));
-    //   Display::lcd.write(byte(2));
-    //   break;
-    // }
-
-    // Wait for n seconds until display will be turned off again
+    // Wait for n seconds and turn the devices off
     int currentTime = millis();
     if (timeDisplayWasTurnedOn != 0 &&
         currentTime - timeDisplayWasTurnedOn >= 30000) {
