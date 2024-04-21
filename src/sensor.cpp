@@ -11,10 +11,9 @@ void sensorOff() { digitalWrite(sensorPower, LOW); }
 //  Return the analog soil moisture measurement
 int readSensor() {
   sensorOn();
-  delay(10);
+  delay(50);
   int val = analogRead(sensorPin);
   sensorOff();
-  Serial.println("Sensor value: " + String(val));
   return val;
 }
 

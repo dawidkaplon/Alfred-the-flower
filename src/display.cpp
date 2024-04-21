@@ -20,14 +20,17 @@ const char *padText(const char *text) {
 }
 
 void printText(bool alfredFeelings, int moisture, const char *soilCondition) {
+  lcd.clear();
 
   char moistureText[20];
   snprintf(moistureText, sizeof(moistureText), "SUCHOSC GLEBY: %d%%", moisture);
   const char *textsArray[] = {"", "", soilCondition, moistureText};
 
-  if (strcmp(textsArray[0], "") != 0 ||
-      strcmp(textsArray[1], "") != // Check if the user wants to
-          0) {                     // customize the first two lines themselves
+  if (strcmp(textsArray[0], "") != 0 || strcmp(textsArray[1], "") != 0) {
+    // If textsArray[0] and textsArray[1] are not empty,
+    // the given texts are padded and printed on the LCD.
+    // If they are empty, a basic schema for the 1st and 2nd line
+    // is executed after an else{} statement.
     lcd.setCursor(0, 0);
     lcd.print(padText(textsArray[0]));
 
@@ -36,16 +39,31 @@ void printText(bool alfredFeelings, int moisture, const char *soilCondition) {
   }
 
   else {
-    for (int i = 0; i <= 5;
-         ++i) { // Display first line as decorated flower name
+
+    // To ensure proper name padding:
+    // - Enter the flowerName (with a blank space on both sides) for the 1st
+    // line.
+    // - Enter the numberOfEmotes desired for the 2nd line.
+    // - No further modifications are necessary below.
+    const char *flowerName = " ALFRED ";
+    int numberOfEmotes = 6;
+
+    int flowerNameLength = String(flowerName).length();
+    int paddingLen = (20 - flowerNameLength) / 2 - 1;
+
+    for (int i = 0; i <= paddingLen;
+         ++i) { // Display straight lines around the flower name
       Display::lcd.setCursor(i, 0);
       Display::lcd.write(byte(3));
     };
-    Display::lcd.print(" ALFRED ");
-    for (int i = 14; i <= 19; ++i) {
+
+    Display::lcd.print(flowerName);
+
+    for (int i = paddingLen + flowerNameLength + 1; i <= 19;
+         ++i) { // Display straight lines around the flower name
       Display::lcd.setCursor(i, 0);
       Display::lcd.write(byte(3));
-    }
+    };
 
     uint8_t emote;
 
@@ -61,22 +79,26 @@ void printText(bool alfredFeelings, int moisture, const char *soilCondition) {
       emote = byte(2);
       break;
     }
-    for (int i = 0; i <= 7;
+
+    // " -2 " is used to pad empty spaces
+    // from both sides of custom chars
+    int emotesPaddingLen = (20 - numberOfEmotes - 2) / 2;
+
+    for (int i = 0; i <= emotesPaddingLen;
          ++i) { // Display straight lines around the custom characters
       Display::lcd.setCursor(i, 1);
       Display::lcd.write(byte(3));
     };
 
-    Display::lcd.setCursor(8, 1);
-    Display::lcd.print(" ");
-    Display::lcd.setCursor(9, 1);
-    Display::lcd.write(emote);
-    Display::lcd.setCursor(10, 1);
-    Display::lcd.write(emote);
-    Display::lcd.setCursor(11, 1);
+    Display::lcd.setCursor(emotesPaddingLen, 1);
     Display::lcd.print(" ");
 
-    for (int i = 12; i <= 19;
+    for (int i = 0; i < numberOfEmotes; ++i) {
+      Display::lcd.write(emote);
+    }
+    Display::lcd.print(" ");
+
+    for (int i = emotesPaddingLen + numberOfEmotes + 2; i <= 19;
          ++i) { // Display straight lines around the custom characters
       Display::lcd.setCursor(i, 1);
       Display::lcd.write(byte(3));

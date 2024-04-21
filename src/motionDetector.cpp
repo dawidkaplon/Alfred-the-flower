@@ -15,13 +15,10 @@ bool isMotionDetected() {
   pinStatePrevious = pinStateCurrent;         // store old state
   pinStateCurrent = digitalRead(detectorPin); // read new state
 
-  if (pinStatePrevious == LOW && pinStateCurrent == HIGH) {
+  if (pinStateCurrent == HIGH) {
     // Motion was detected
-    Serial.println("Motion detected!");
     return true;
   }
-  Serial.println("Previous: " + String(pinStatePrevious));
-  Serial.println("Current: " + String(pinStateCurrent));
   return false;
 }
 } // namespace Detector

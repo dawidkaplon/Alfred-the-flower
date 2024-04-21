@@ -6,12 +6,13 @@
 
 #define greenLed 15
 #define redLed 14
+#define buzzerPin 28
 
 int moisture;
 int previousMoisture;
 int timeDisplayWasTurnedOn = 0;
 int alfredFeelings;
-bool turnedOn = true;
+bool running = true;
 const char *soilCondition; // E.g. dry enough/too wet
 
 void lightLed() {
@@ -24,19 +25,21 @@ void lightLed() {
   }
 }
 
+void beepBuzzer() { tone(buzzerPin, 2000, 10); }
+
 void turnDevicesOff() {
   Display::displayOff();
   Sensor::sensorOff();
   digitalWrite(redLed, LOW);
   digitalWrite(greenLed, LOW);
-  turnedOn = false;
+  running = false;
 }
 
 void turnDevicesOn() {
   Display::displayOn();
   Sensor::sensorOn();
   lightLed();
-  turnedOn = true;
+  running = true;
 }
 
 void setup()
@@ -49,11 +52,12 @@ void setup()
 
   pinMode(greenLed, OUTPUT);
   pinMode(redLed, OUTPUT);
+  pinMode(buzzerPin, OUTPUT);
 }
 
 void loop() {
 
-  if (turnedOn) {
+  if (running) {
     previousMoisture = moisture;
     moisture = float(Sensor::readSensor()) / 10;
     // Approximate moisture level ranges:
@@ -63,6 +67,7 @@ void loop() {
     if (moisture < 35) {
       alfredFeelings = 0;
       soilCondition = "Jest zbyt mokro!";
+      beepBuzzer();
 
     } else if (moisture >= 35 && moisture <= 60) {
       alfredFeelings = 1;
@@ -71,18 +76,25 @@ void loop() {
     } else {
       alfredFeelings = 0;
       soilCondition = "Jest zbyt sucho!";
+      beepBuzzer();
     }
 
     lightLed();
-    if (moisture !=
-        previousMoisture) { // Reload LCD text only when the moisture changes
+
+    // Reload LCD text only when the moisture changes
+    if (moisture != previousMoisture) {
       Display::printText(alfredFeelings, moisture, soilCondition);
+      timeDisplayWasTurnedOn = millis();
+    }
+
+    if (Detector::isMotionDetected()) {  // Do not turn off devices as long as
+      timeDisplayWasTurnedOn = millis(); // there is the motion around the LCD
     }
 
     // Wait for n seconds and turn the devices off
     int currentTime = millis();
     if (timeDisplayWasTurnedOn != 0 &&
-        currentTime - timeDisplayWasTurnedOn >= 30000) {
+        currentTime - timeDisplayWasTurnedOn >= 10000) {
       timeDisplayWasTurnedOn = 0;
       turnDevicesOff();
     }
