@@ -1,2 +1,7 @@
 # Alfred-the-flower
-Pi Pico project to control the soil moisture level for the flower. !No more dead flowers!
+
+## Here's an image of the installation:
+
+***(The packaging for the sensor and Pico is under construction) :)***
+
+![flower-img](https://raw.githubusercontent.com/dawidkaplon/Alfred-the-flower/main/static/flower.jpg)
